@@ -1,0 +1,30 @@
+server:
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain
+    min-response-size: 1024
+  port: 8888
+  context-path: /carrent
+
+
+spring:
+  datasource:
+    url: jdbc:mysql://129.204.3.146:3306/shenzhou?serverTimezone=Asia/Shanghai&useUnicode=yes&characterEncoding=UTF8
+    username: root
+    password: Aa.com123
+    driver-class-name: com.mysql.jdbc.Driver
+    hikari:
+      max-lifetime: 1765000
+      maximum-pool-size: 15
+  devtools:
+    restart:
+      enable: true
+  aop:
+    proxy-target-class: true
+    auto: true
+
+
+
+log:
+  level: debug
+  path: /log
