@@ -1,11 +1,10 @@
 package com.rent.carrentwebapi.controller_test;
 
-
 import com.baomidou.mybatisplus.plugins.Page;
 import com.google.gson.JsonObject;
 import com.rent.carrentcommon.util.ParserUtil;
-import com.rent.carrentdal.dto.OrderDto;
-import com.rent.carrentservice.service.OrderService;
+import com.rent.carrentdal.dto.CarDto;
+import com.rent.carrentservice.service.CarService;
 import com.rent.carrentwebapi.AbstractTest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
@@ -31,13 +30,12 @@ import static org.mockito.Mockito.when;
 @Slf4j
 @AutoConfigureMockMvc
 @WebAppConfiguration
-public class OrderControllerTest extends AbstractTest {
-
+public class CarControllerTest extends AbstractTest {
     @Autowired
     private WebApplicationContext webApplicationContext;
 
     @MockBean
-    private OrderService orderService;
+    private CarService carService;
 
 
     private MockMvc mockMvc;
@@ -46,27 +44,28 @@ public class OrderControllerTest extends AbstractTest {
     public void setup() {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
 
-        Page<OrderDto> dtoPage = new Page<>();
-        dtoPage.setSize(1);
+        Page<CarDto> carPage = new Page<>();
+        carPage.setSize(1);
         try {
-            when(orderService.queryOrders(any())).thenReturn(dtoPage);
+            when(carService.queryList(any())).thenReturn(carPage);
         } catch (Exception e) {
-            log.error("OrderControllerTest|setup|error:{}", e);
+            log.error("CarControllerTest|setup|error:{}", e);
         }
 
     }
 
     @Test
-    public void listTest() throws Exception {
-        String url = "/order/v1/getOrderList";
-        OrderDto orderDto = new OrderDto();
-        orderDto.setOrderCode("jjj11");
-        orderDto.setPage(1);
-        orderDto.setPage(2);
+    public void queryTest() throws Exception {
+
+        String url = "/car/v1/getCarsList";
+        CarDto carDto = new CarDto();
+        carDto.setModel("Camry");
+        carDto.setPage(1);
+        carDto.setPage(2);
 
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(url)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(ParserUtil.GSON.toJson(orderDto));
+                .content(ParserUtil.GSON.toJson(carDto));
 
         MvcResult mvcResult = this.mockMvc
                 .perform(requestBuilder)
@@ -79,6 +78,6 @@ public class OrderControllerTest extends AbstractTest {
         int size = rtJSON.getAsJsonObject("data").get("size").getAsInt();
 
         Assert.assertTrue(size == 1);
-    }
 
+    }
 }
