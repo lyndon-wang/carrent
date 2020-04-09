@@ -3,6 +3,7 @@ package com.rent.carrentwebapi.controller_test;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.google.gson.JsonObject;
+import com.rent.carrentcommon.exception.MyException;
 import com.rent.carrentcommon.util.ParserUtil;
 import com.rent.carrentdal.dto.OrderDto;
 import com.rent.carrentservice.service.OrderService;
@@ -49,7 +50,8 @@ public class OrderControllerTest extends AbstractTest {
         Page<OrderDto> dtoPage = new Page<>();
         dtoPage.setSize(1);
         try {
-            when(orderService.queryOrders(any())).thenReturn(dtoPage);
+//            when(orderService.queryOrders(any())).thenReturn(dtoPage);
+            when(orderService.queryOrders(any())).thenThrow(MyException.fail("test defined exception. "));
         } catch (Exception e) {
             log.error("OrderControllerTest|setup|error:{}", e);
         }
@@ -81,4 +83,28 @@ public class OrderControllerTest extends AbstractTest {
         Assert.assertTrue(size == 1);
     }
 
+    @Test
+    public void listTest0() throws Exception {
+        String url = "/order/v1/getOrderList";
+        OrderDto orderDto = new OrderDto();
+        orderDto.setOrderCode("jjj11");
+        orderDto.setPage(1);
+        orderDto.setPage(2);
+
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ParserUtil.GSON.toJson(orderDto));
+
+        MvcResult mvcResult = this.mockMvc
+                .perform(requestBuilder)
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        JsonObject rtJSON = ParserUtil.GSON.fromJson(contentAsString, JsonObject.class);
+        log.info(contentAsString);
+        int state = rtJSON.get("state").getAsInt();
+
+        Assert.assertTrue(state == 1);
+    }
 }

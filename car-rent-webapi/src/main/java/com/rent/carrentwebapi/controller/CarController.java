@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(value = {"/car"})
-@Api(tags ={"car controller"})
+@Api(tags = {"car controller"})
 @Slf4j
 public class CarController {
 
@@ -28,28 +28,17 @@ public class CarController {
     private CarService carService;
 
 
-    @RequestMapping(value={"/test"},method= RequestMethod.GET)
-    @ApiOperation(value="test", notes="test controller")
-    public String test(){
+    @RequestMapping(value = {"/test"}, method = RequestMethod.GET)
+    @ApiOperation(value = "test", notes = "test controller")
+    public String test() {
         return "ok";
     }
 
 
-    @RequestMapping(value={"/v1/getCarsList"},method= RequestMethod.POST)
-    @ApiOperation(value="query", notes="query car controller")
-    public ResponseResult queryList(@RequestBody @Validated @ApiParam(value = "access parameter bean") CarDto carDto){
-        Page<CarDto> datas = null;
-        try {
-            datas = carService.queryList(carDto);
-        } catch (MyException e) {
-            log.error("CarController|queryList|MyException e:{}", e);
-            return ResponseResult.e(ResponseCode.SERVICE_EXCEPTION, null);
-        } catch (Exception e) {
-            log.error("CarController|queryList|Exception e:{}", e);
-            return ResponseResult.e(ResponseCode.UNKONW_EXCEPTION, e);
-        }
-
-        return ResponseResult.e(ResponseCode.OK, datas);
+    @RequestMapping(value = {"/v1/getCarsList"}, method = RequestMethod.POST)
+    @ApiOperation(value = "query", notes = "query car controller")
+    public ResponseResult queryList(@RequestBody @Validated @ApiParam(value = "access parameter bean") CarDto carDto) throws Exception {
+        return ResponseResult.e(ResponseCode.OK, carService.queryList(carDto));
     }
 
 

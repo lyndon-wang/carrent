@@ -2,6 +2,7 @@ package com.rent.carrentwebapi.controller_test;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.google.gson.JsonObject;
+import com.rent.carrentcommon.exception.MyException;
 import com.rent.carrentcommon.util.ParserUtil;
 import com.rent.carrentdal.dto.CarDto;
 import com.rent.carrentservice.service.CarService;
@@ -47,7 +48,8 @@ public class CarControllerTest extends AbstractTest {
         Page<CarDto> carPage = new Page<>();
         carPage.setSize(1);
         try {
-            when(carService.queryList(any())).thenReturn(carPage);
+//            when(carService.queryList(any())).thenReturn(carPage);
+            when(carService.queryList(any())).thenThrow(MyException.fail("car controller exception test"));
         } catch (Exception e) {
             log.error("CarControllerTest|setup|error:{}", e);
         }
@@ -78,6 +80,33 @@ public class CarControllerTest extends AbstractTest {
         int size = rtJSON.getAsJsonObject("data").get("size").getAsInt();
 
         Assert.assertTrue(size == 1);
+
+    }
+
+    @Test
+    public void queryTest0() throws Exception {
+
+        String url = "/car/v1/getCarsList";
+        CarDto carDto = new CarDto();
+        carDto.setModel("Camry");
+        carDto.setPage(1);
+        carDto.setPage(2);
+
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ParserUtil.GSON.toJson(carDto));
+
+        MvcResult mvcResult = this.mockMvc
+                .perform(requestBuilder)
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        JsonObject rtJSON = ParserUtil.GSON.fromJson(contentAsString, JsonObject.class);
+        log.info(contentAsString);
+        int state = rtJSON.get("state").getAsInt();
+
+        Assert.assertTrue(state == 1);
 
     }
 }
